@@ -82,6 +82,7 @@
         .connection-status {
             text-align: center;
             margin-top: 10px;
+            margin-bottom: 20px;
             padding: 5px;
             border-radius: 4px;
             font-weight: bold;
@@ -94,12 +95,98 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+        
+        /* New styles for text output */
+        .text-output-panel {
+            grid-column: span 2;
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .text-output-panel h2 {
+            margin-top: 0;
+            color: #27ae60;
+            font-size: 18px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+        .text-display {
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            line-height: 1.5;
+            min-height: 100px;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            overflow-wrap: break-word;
+        }
+        .latest-char {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+            width: 80px;
+            height: 80px;
+            background-color: #f8f9fa;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+        }
+        .char-flash {
+            background-color: #3498db;
+            color: white;
+        }
+        .text-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .control-btn {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .control-btn:hover {
+            background-color: #2980b9;
+        }
+        .clear-btn {
+            background-color: #e74c3c;
+        }
+        .clear-btn:hover {
+            background-color: #c0392b;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Gesture Glove Monitor</h1>
         <div id="connection-status" class="connection-status">Connecting to Firebase...</div>
+        
+        <!-- Text Output Panel - Added at the top for visibility -->
+        <div class="text-output-panel">
+            <h2>Recognized Text</h2>
+            <div class="text-display" id="recognized-text">Waiting for gestures...</div>
+            
+            <h3 style="text-align: center; margin-top: 15px;">Latest Character</h3>
+            <div class="latest-char" id="latest-char">-</div>
+            
+            <div class="text-controls">
+                <button class="control-btn clear-btn" id="clear-btn">Clear Text</button>
+            </div>
+        </div>
         
         <div class="dashboard">
             <div class="sensor-panel">
@@ -232,6 +319,15 @@
             }
         }
         
+        // Function to flash latest character
+        function flashLatestChar() {
+            const charElement = document.getElementById('latest-char');
+            charElement.classList.add('char-flash');
+            setTimeout(() => {
+                charElement.classList.remove('char-flash');
+            }, 500);
+        }
+        
         // Listen for connection status changes
         const connectedRef = database.ref('.info/connected');
         connectedRef.on('value', (snap) => {
@@ -260,6 +356,43 @@
         }, (error) => {
             console.error("Error fetching sensor data:", error);
             updateConnectionStatus(false);
+        });
+        
+        // Listen for text data updates
+        database.ref('gesture/text').on('value', (snapshot) => {
+            const text = snapshot.val();
+            if (text !== null) {
+                document.getElementById('recognized-text').textContent = text || "No text yet";
+            }
+        }, (error) => {
+            console.error("Error fetching text data:", error);
+        });
+        
+        // Listen for latest character updates
+        let previousChar = "";
+        database.ref('gesture/latest_char').on('value', (snapshot) => {
+            const latestChar = snapshot.val();
+            if (latestChar !== null && latestChar !== previousChar) {
+                document.getElementById('latest-char').textContent = latestChar;
+                flashLatestChar();
+                previousChar = latestChar;
+            }
+        });
+        
+        // Clear button functionality
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the text?')) {
+                // Clear local display
+                document.getElementById('recognized-text').textContent = "";
+                // Clear in Firebase
+                database.ref('gesture/text').set("")
+                    .then(() => {
+                        console.log("Text cleared in Firebase");
+                    })
+                    .catch(error => {
+                        console.error("Error clearing text in Firebase:", error);
+                    });
+            }
         });
     </script>
 </body>
