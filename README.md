@@ -10,7 +10,7 @@ Detected gestures are sent to a **Firebase Realtime Database**, and correspondin
 - **Firebase Realtime Sync**: Uses Firebase Realtime Database for storing sensor readings and text output.
 - **Live Web Display**: A website hosted using GitHub Pages displays recognized text in real time.
 - **Compact Wearable Design**: Glove-mounted sensors provide a user-friendly and portable experience.
-- 
+
 ## 🧰 Components Used
 - **ESP32 Dev Board**
 - **4x Flex Sensors** (attached to index, middle, ring, and little fingers)
@@ -18,7 +18,7 @@ Detected gestures are sent to a **Firebase Realtime Database**, and correspondin
 - **Firebase Realtime Database**
 - **GitHub Pages**
 - **Jumper Wires**, **Glove**, and **Breadboard**
-- 
+ 
 ## 📁 Project Structure
 - **Firmware**: ESP32 code to read sensor data and push to Firebase 
 - **Project Photograph**:Demonstrates hardware setup, wiring, and Firebase realtime database and Website
