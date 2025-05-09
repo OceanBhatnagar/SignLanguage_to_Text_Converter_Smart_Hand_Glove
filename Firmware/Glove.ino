@@ -16,9 +16,9 @@ int flexValues[4] = {0, 0, 0, 0};         // Current flex sensor values
 int lastFlexValues[4] = {0, 0, 0, 0};     // Previous flex sensor values
 
 // Hardcoded Flex Sensor Calibration Values
-const int FLEX_MIN[4] = {1880, 1760, 1930, 1790}; // Min values (unbent)
-const int FLEX_MAX[4] = {1960, 1840, 2010, 1860}; // Max values (bent)
-const int FLEX_RANGE[4] = {80, 80, 80, 70};      // Range calculation (MAX - MIN)
+const int FLEX_MIN[4] = {2080, 1920, 2220, 2150}; // Min values (unbent)
+const int FLEX_MAX[4] = {2180, 1980, 2280, 2220}; // Max values (bent)
+const int FLEX_RANGE[4] = {100, 60, 60, 70};      // Range calculation (MAX - MIN)
 
 // Gesture Recognition Variables
 String currentCharacter = "";
@@ -260,7 +260,7 @@ void interpretGesture() {
     detectedChar = "Hello ";
   }
   // Bye - All Bent
-  else if (finger1Bent && finger2Bent && finger3Bent && finger4Bent) {
+  else if (finger1Bent && finger2Bent && !finger3Bent && !finger4Bent) {
     detectedChar = "Bye ";
   }
   // Thank You-1st Bent
